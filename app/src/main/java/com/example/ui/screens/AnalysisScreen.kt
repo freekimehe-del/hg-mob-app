@@ -62,7 +62,7 @@ fun AnalysisScreen(
         ) {
             Text(
                 text = "Hybrid Analysis",
-                fontSize = 24.sp,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.weight(1f)
@@ -79,7 +79,7 @@ fun AnalysisScreen(
                 ) {
                     Text(
                         text = selectedApk!!.name,
-                        fontSize = 11.sp,
+                        fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
                         maxLines = 1,
@@ -102,7 +102,7 @@ fun AnalysisScreen(
                     selected = subTab == index,
                     onClick = { viewModel.setAnalysisSubTab(index) },
                     icon = { Icon(tabIcons[index], contentDescription = null, modifier = Modifier.size(18.dp)) },
-                    text = { Text(title, fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                    text = { Text(title, fontSize = 13.sp, fontWeight = FontWeight.Bold) },
                     modifier = Modifier.testTag("analysis_tab_$index")
                 )
             }
@@ -138,16 +138,16 @@ fun AnalysisScreen(
                         Text(
                             text = "Target APK Required",
                             fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
+                            fontSize = 22.sp,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "To run static structural parsing or launch AI reinforcement learning simulations, please upload a target APK file first.",
-                            fontSize = 13.sp,
+                            fontSize = 15.sp,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                             textAlign = TextAlign.Center,
-                            lineHeight = 20.sp
+                            lineHeight = 22.sp
                         )
                         Spacer(modifier = Modifier.height(20.dp))
                         Button(
@@ -200,7 +200,7 @@ fun StaticAnalysisView(viewModel: MainViewModel) {
                 Text(
                     text = "Static Structural Parsing",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp,
+                    fontSize = 18.sp,
                     color = MaterialTheme.colorScheme.primary
                 )
             }
@@ -283,7 +283,7 @@ fun StaticCategoryCard(
                 Text(
                     text = title,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
+                    fontSize = 17.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
@@ -302,7 +302,7 @@ fun StaticCategoryCard(
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
                             text = item,
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             fontFamily = FontFamily.Monospace,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -332,7 +332,7 @@ fun DynamicAnalysisView(viewModel: MainViewModel) {
             Text(
                 text = "Runtime Layout Exploration",
                 fontWeight = FontWeight.Bold,
-                fontSize = 15.sp,
+                fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.secondary
             )
         }
@@ -357,15 +357,15 @@ fun DynamicAnalysisView(viewModel: MainViewModel) {
                     Text(
                         text = "Dynamic Analysis Stimulator",
                         fontWeight = FontWeight.Bold,
-                        fontSize = 15.sp,
+                        fontSize = 18.sp,
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                     Text(
                         text = "Installs target on sandboxed device to discover layout elements and widget triggers through recursive BFS stimulation.",
-                        fontSize = 12.sp,
+                        fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
                         textAlign = TextAlign.Center,
-                        lineHeight = 18.sp,
+                        lineHeight = 20.sp,
                         modifier = Modifier.padding(top = 4.dp, bottom = 16.dp)
                     )
 
@@ -381,7 +381,7 @@ fun DynamicAnalysisView(viewModel: MainViewModel) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "Analyzing GUI tree: ${(progress * 100).toInt()}% completed",
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.secondary
                         )
@@ -405,7 +405,7 @@ fun DynamicAnalysisView(viewModel: MainViewModel) {
                 Text(
                     text = "Discovered GUI Components",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 13.sp,
+                    fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
@@ -430,7 +430,7 @@ fun DynamicAnalysisView(viewModel: MainViewModel) {
                 Text(
                     text = "Stimulation Log Output",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 13.sp,
+                    fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
@@ -445,7 +445,7 @@ fun DynamicAnalysisView(viewModel: MainViewModel) {
                         data!!.scanLogs.forEach { log ->
                             Text(
                                 text = log,
-                                fontSize = 11.sp,
+                                fontSize = 13.sp,
                                 fontFamily = FontFamily.Monospace,
                                 color = if (log.contains("SUCCESS")) MaterialTheme.colorScheme.secondary else if (log.contains("PROCESS")) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(vertical = 2.dp)
@@ -489,8 +489,8 @@ fun WidgetIndicatorBox(
             }
             Spacer(modifier = Modifier.width(10.dp))
             Column {
-                Text(text = label, fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
-                Text(text = count, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                Text(text = label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                Text(text = count, fontSize = 19.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
             }
         }
     }
@@ -514,7 +514,7 @@ fun ReinforcementLearningView(viewModel: MainViewModel) {
             Text(
                 text = "Reinforcement Learning Exploration",
                 fontWeight = FontWeight.Bold,
-                fontSize = 15.sp,
+                fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.primary
             )
         }
@@ -539,15 +539,15 @@ fun ReinforcementLearningView(viewModel: MainViewModel) {
                     Text(
                         text = "RL Agent Gym",
                         fontWeight = FontWeight.Bold,
-                        fontSize = 15.sp,
+                        fontSize = 18.sp,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                     Text(
                         text = "Launches Q-learning based neural agent that explores application states and collects reward signals based on widget discovery and code coverage.",
-                        fontSize = 12.sp,
+                        fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
                         textAlign = TextAlign.Center,
-                        lineHeight = 18.sp,
+                        lineHeight = 20.sp,
                         modifier = Modifier.padding(top = 4.dp, bottom = 16.dp)
                     )
 
@@ -556,7 +556,7 @@ fun ReinforcementLearningView(viewModel: MainViewModel) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "RL Agent active: Training & exploring...",
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -580,7 +580,7 @@ fun ReinforcementLearningView(viewModel: MainViewModel) {
                 Text(
                     text = "Agent Training Results",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 13.sp,
+                    fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
@@ -604,8 +604,8 @@ fun ReinforcementLearningView(viewModel: MainViewModel) {
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text("GUI Code Coverage", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-                                Text("${"%.1f".format(rl.coverage)}%", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
+                                Text("GUI Code Coverage", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                                Text("${"%.1f".format(rl.coverage)}%", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
                             }
                             Spacer(modifier = Modifier.height(8.dp))
                             LinearProgressIndicator(
@@ -629,8 +629,8 @@ fun ReinforcementLearningView(viewModel: MainViewModel) {
                             Icon(Icons.Default.Radar, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
-                                Text("Current Exploration Node", fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
-                                Text(rl.currentState, fontSize = 12.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                                Text("Current Exploration Node", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                                Text(rl.currentState, fontSize = 14.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                             }
                         }
                     }
@@ -662,7 +662,7 @@ fun GeneticAlgorithmView(viewModel: MainViewModel) {
             Text(
                 text = "Genetic Optimizer Module",
                 fontWeight = FontWeight.Bold,
-                fontSize = 15.sp,
+                fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.tertiary
             )
         }
@@ -687,15 +687,15 @@ fun GeneticAlgorithmView(viewModel: MainViewModel) {
                     Text(
                         text = "Genetic Algorithm Optimization",
                         fontWeight = FontWeight.Bold,
-                        fontSize = 15.sp,
+                        fontSize = 18.sp,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = "Mutates and recombines test action sequences (chromosomes) over multiple generations to generate short, optimal, crash-triggering sequences.",
-                        fontSize = 12.sp,
+                        fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                         textAlign = TextAlign.Center,
-                        lineHeight = 18.sp,
+                        lineHeight = 20.sp,
                         modifier = Modifier.padding(top = 4.dp, bottom = 16.dp)
                     )
 
@@ -704,7 +704,7 @@ fun GeneticAlgorithmView(viewModel: MainViewModel) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "GA Evolution running: Recombining genes...",
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.tertiary
                         )
@@ -728,7 +728,7 @@ fun GeneticAlgorithmView(viewModel: MainViewModel) {
                 Text(
                     text = "Genetic Parameters & Fitness",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 13.sp,
+                    fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }
@@ -756,8 +756,8 @@ fun GeneticAlgorithmView(viewModel: MainViewModel) {
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text("Best Fitness Score", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-                                Text("${"%.3f".format(ga.bestFitness)}", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.tertiary)
+                                Text("Best Fitness Score", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                                Text("${"%.3f".format(ga.bestFitness)}", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.tertiary)
                             }
                             Spacer(modifier = Modifier.height(8.dp))
                             LinearProgressIndicator(

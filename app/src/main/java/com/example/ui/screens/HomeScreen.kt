@@ -62,7 +62,7 @@ fun HomeScreen(
                     Text(
                         text = "H",
                         color = Color.White,
-                        fontSize = 20.sp,
+                        fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -70,14 +70,14 @@ fun HomeScreen(
                 Column {
                     Text(
                         text = "HRGAF Testing",
-                        fontSize = 18.sp,
+                        fontSize = 22.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onBackground,
-                        lineHeight = 22.sp
+                        lineHeight = 26.sp
                     )
                     Text(
                         text = "Hybrid RL-GA Framework",
-                        fontSize = 12.sp,
+                        fontSize = 15.sp,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                     )
@@ -167,7 +167,7 @@ fun HomeScreen(
                     Column {
                         Text(
                             text = "CURRENT PROJECT",
-                            fontSize = 10.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 1.sp,
                             color = if (selectedApk != null) {
@@ -179,7 +179,7 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             text = selectedApk?.packageName ?: "com.example.research_app",
-                            fontSize = 14.sp,
+                            fontSize = 17.sp,
                             fontWeight = FontWeight.Medium,
                             color = if (selectedApk != null) {
                                 if (isDark) Color.White else Color(0xFF052E16) // text-green-950
@@ -199,7 +199,7 @@ fun HomeScreen(
                     ) {
                         Text(
                             text = "84.2%",
-                            fontSize = 13.sp,
+                            fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
                             color = if (isDark) Color(0xFF4ADE80) else Color(0xFF15803D) // text-green-700
                         )
@@ -232,7 +232,7 @@ fun HomeScreen(
                     ) {
                         Text(
                             text = "84.2%",
-                            fontSize = 13.sp,
+                            fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
                             color = if (isDark) Color(0xFF86EFAC).copy(alpha = 0.5f) else Color(0xFF166534).copy(alpha = 0.5f)
                         )
@@ -265,7 +265,7 @@ fun HomeScreen(
 
         Text(
             text = "Testing Modules",
-            fontSize = 16.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(bottom = 12.dp)
@@ -443,16 +443,16 @@ fun MenuGridCard(
                 Text(
                     text = title,
                     fontWeight = FontWeight.SemiBold,
-                    fontSize = 15.sp,
+                    fontSize = 18.sp,
                     color = contentColor,
-                    lineHeight = 18.sp
+                    lineHeight = 22.sp
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = description,
-                    fontSize = 11.sp,
+                    fontSize = 13.sp,
                     color = contentColor.copy(alpha = 0.7f),
-                    lineHeight = 14.sp,
+                    lineHeight = 17.sp,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )

@@ -91,7 +91,7 @@ fun ReportsScreen(
         ) {
             Text(
                 text = "Reports Hub",
-                fontSize = 24.sp,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.weight(1f)
@@ -125,16 +125,16 @@ fun ReportsScreen(
                         Text(
                             text = "No Reports Available",
                             fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
+                            fontSize = 22.sp,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "Analyze a target APK package to generate and view comparative hybrid coverage and crash telemetry reports here.",
-                            fontSize = 13.sp,
+                            fontSize = 15.sp,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                             textAlign = TextAlign.Center,
-                            lineHeight = 20.sp
+                            lineHeight = 22.sp
                         )
                         Spacer(modifier = Modifier.height(20.dp))
                         Button(
@@ -161,7 +161,7 @@ fun ReportsScreen(
                     Text(
                         text = "Testing Performance Telemetry",
                         fontWeight = FontWeight.Bold,
-                        fontSize = 15.sp,
+                        fontSize = 18.sp,
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
@@ -185,8 +185,8 @@ fun ReportsScreen(
                             )
                             Spacer(modifier = Modifier.width(16.dp))
                             Column(modifier = Modifier.weight(1f)) {
-                                Text(apk.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
-                                Text(apk.packageName, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                                Text(apk.name, fontWeight = FontWeight.Bold, fontSize = 19.sp, color = MaterialTheme.colorScheme.onSurface)
+                                Text(apk.packageName, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                             }
                         }
                     }
@@ -219,14 +219,14 @@ fun ReportsScreen(
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(Icons.Default.Security, contentDescription = null, tint = report.riskColor, modifier = Modifier.size(24.dp))
                                     Spacer(modifier = Modifier.width(12.dp))
-                                    Text("Application Risk Level", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                                    Text("Application Risk Level", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                                 }
                                 Box(
                                     modifier = Modifier
                                         .background(report.riskColor.copy(alpha = 0.15f), RoundedCornerShape(8.dp))
                                         .padding(horizontal = 12.dp, vertical = 6.dp)
                                 ) {
-                                    Text(report.riskLevel, fontWeight = FontWeight.ExtraBold, color = report.riskColor, fontSize = 12.sp)
+                                    Text(report.riskLevel, fontWeight = FontWeight.ExtraBold, color = report.riskColor, fontSize = 14.sp)
                                 }
                             }
                         }
@@ -244,10 +244,10 @@ fun ReportsScreen(
                         Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(Icons.Default.CheckCircleOutline, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(36.dp))
                             Spacer(modifier = Modifier.height(12.dp))
-                            Text("Simulated HRGAF Run Complete", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                            Text("Simulated HRGAF Run Complete", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                             Text(
                                 "The combined Reinforcement Learning exploration agent and Genetic sequence optimizer has finished the assessment of all active Activities.",
-                                fontSize = 12.sp,
+                                fontSize = 14.sp,
                                 textAlign = TextAlign.Center,
                                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                                 modifier = Modifier.padding(vertical = 6.dp)
@@ -257,7 +257,7 @@ fun ReportsScreen(
                             if (isExporting) {
                                 CircularProgressIndicator()
                                 Spacer(modifier = Modifier.height(8.dp))
-                                Text("Compiling test coverage reports...", fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
+                                Text("Compiling test coverage reports...", fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
                             } else {
                                 Button(
                                     onClick = { 
@@ -294,14 +294,14 @@ fun ReportsScreen(
                     Text(
                         text = "Exported Text Report",
                         fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
+                        fontSize = 22.sp
                     )
                 },
                 text = {
                     Column {
                         Text(
                             text = "Below is the generated plain text report. In a real environment, this is saved to device downloads.",
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                             modifier = Modifier.padding(bottom = 12.dp)
                         )
@@ -322,7 +322,7 @@ fun ReportsScreen(
                                 item {
                                     Text(
                                         text = generateReportText(apk.name, apk.packageName, report),
-                                        fontSize = 10.sp,
+                                        fontSize = 12.sp,
                                         fontFamily = FontFamily.Monospace,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -373,9 +373,9 @@ fun ReportIndicatorCard(
             }
             
             Column {
-                Text(label, fontSize = 9.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), lineHeight = 11.sp)
+                Text(label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), lineHeight = 14.sp)
                 Spacer(modifier = Modifier.height(2.dp))
-                Text(value, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface, lineHeight = 18.sp)
+                Text(value, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface, lineHeight = 22.sp)
             }
         }
     }

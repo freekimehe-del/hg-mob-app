@@ -33,7 +33,7 @@ fun SettingsScreen(
         // Title
         Text(
             text = "Settings",
-            fontSize = 24.sp,
+            fontSize = 28.sp,
             fontWeight = FontWeight.ExtraBold,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(vertical = 8.dp)
@@ -66,12 +66,12 @@ fun SettingsScreen(
                             Text(
                                 text = "Dark Theme",
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 15.sp,
+                                fontSize = 18.sp,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = "Switch between light and dark visual themes.",
-                                fontSize = 11.sp,
+                                fontSize = 13.sp,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                             )
                         }
@@ -106,7 +106,7 @@ fun SettingsScreen(
                     Text(
                         text = "About App",
                         fontWeight = FontWeight.Bold,
-                        fontSize = 15.sp,
+                        fontSize = 18.sp,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }
@@ -116,15 +116,15 @@ fun SettingsScreen(
                 Text(
                     text = "Hybrid Reinforcement Learning and Genetic Algorithm Framework (HRGAF)",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 13.sp,
+                    fontSize = 15.sp,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(bottom = 6.dp)
                 )
 
                 Text(
                     text = "This GUI application demonstrates the research framework titled \"Hybrid Reinforcement Learning and Genetic Algorithm Framework for Android GUI Testing.\"\n\nHRGAF combines the exploratory power of Reinforcement Learning agents with the sequence-minimization fitness optimization of Genetic Algorithms. This hybrid architecture drastically accelerates Android test suite generation, achieves high-density code coverage, and discovers critical UI race conditions/deadlocks in modular Android systems.",
-                    fontSize = 12.sp,
-                    lineHeight = 18.sp,
+                    fontSize = 14.sp,
+                    lineHeight = 20.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
             }
@@ -146,13 +146,13 @@ fun SettingsScreen(
                 Text(
                     text = "System Build Version",
                     fontWeight = FontWeight.Medium,
-                    fontSize = 13.sp,
+                    fontSize = 15.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
                 Text(
                     text = "v1.0.0 (Release Build)",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 13.sp,
+                    fontSize = 15.sp,
                     color = MaterialTheme.colorScheme.primary
                 )
             }

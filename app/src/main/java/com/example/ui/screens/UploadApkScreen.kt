@@ -91,7 +91,7 @@ fun UploadApkScreen(
                 
                 Text(
                     text = "Upload Target APK",
-                    fontSize = 20.sp,
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.padding(start = 8.dp)
@@ -126,14 +126,14 @@ fun UploadApkScreen(
                         Text(
                             text = "Uploading and parsing target APK...",
                             fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
+                            fontSize = 19.sp
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "${(uploadProgress * 100).toInt()}% completed",
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.ExtraBold,
-                            fontSize = 18.sp
+                            fontSize = 22.sp
                         )
                     }
                 }
@@ -167,17 +167,17 @@ fun UploadApkScreen(
                         Spacer(modifier = Modifier.height(20.dp))
                         Text(
                             text = "No Target APK Uploaded",
-                            fontSize = 18.sp,
+                            fontSize = 22.sp,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onBackground
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "Tap here to select an APK from your simulated device storage to begin GUI exploration testing.",
-                            fontSize = 13.sp,
+                            fontSize = 15.sp,
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                            lineHeight = 20.sp
+                            lineHeight = 22.sp
                         )
                         Spacer(modifier = Modifier.height(24.dp))
                         Button(
@@ -230,7 +230,7 @@ fun UploadApkScreen(
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
                                         text = apk.name,
-                                        fontSize = 18.sp,
+                                        fontSize = 22.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onSurface,
                                         maxLines = 1,
@@ -238,7 +238,7 @@ fun UploadApkScreen(
                                     )
                                     Text(
                                         text = apk.packageName,
-                                        fontSize = 13.sp,
+                                        fontSize = 15.sp,
                                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
@@ -256,7 +256,7 @@ fun UploadApkScreen(
                                 ) {
                                     Text(
                                         text = "READY",
-                                        fontSize = 11.sp,
+                                        fontSize = 13.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.secondary
                                     )
@@ -292,13 +292,13 @@ fun UploadApkScreen(
                             Text(
                                 text = "Next Recommended Step",
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp,
+                                fontSize = 17.sp,
                                 color = MaterialTheme.colorScheme.primary
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 text = "Use Static Analysis to automatically extract interactive activities, intent parameters, permissions, and layout elements.",
-                                fontSize = 12.sp,
+                                fontSize = 14.sp,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                             )
                             Spacer(modifier = Modifier.height(16.dp))
@@ -357,14 +357,14 @@ fun UploadApkScreen(
                     Text(
                         text = "Select Simulated APK",
                         fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
+                        fontSize = 22.sp
                     )
                 },
                 text = {
                     Column {
                         Text(
                             text = "Select a target APK package from the device's storage directory to run HRGAF testing simulations.",
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
@@ -400,11 +400,11 @@ fun UploadApkScreen(
                                             Text(
                                                 text = apk.name,
                                                 fontWeight = FontWeight.Bold,
-                                                fontSize = 14.sp
+                                                fontSize = 17.sp
                                             )
                                             Text(
                                                 text = "${apk.packageName} • ${apk.size}",
-                                                fontSize = 11.sp,
+                                                fontSize = 13.sp,
                                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                             )
                                         }
@@ -443,14 +443,14 @@ fun ApkPropertyRow(
         Spacer(modifier = Modifier.width(12.dp))
         Text(
             text = label,
-            fontSize = 13.sp,
+            fontSize = 15.sp,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
             modifier = Modifier.width(100.dp)
         )
         Text(
             text = value,
-            fontSize = 14.sp,
+            fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )
