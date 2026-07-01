@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.Color
 val BluePrimaryLight = Color(0xFF0F62FE)
 val GreenSecondaryLight = Color(0xFF10B981)
 val TealTertiaryLight = Color(0xFF009D9A)
-val LightBackground = Color(0xFFF3F6FA)
+val LightBackground = Color(0xFFF3F4F9)
 val LightSurface = Color(0xFFFFFFFF)
 val LightSurfaceVariant = Color(0xFFE5EDF6)
 val OnBlueLight = Color(0xFFFFFFFF)
