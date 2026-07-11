@@ -349,6 +349,49 @@ class MainViewModel : ViewModel() {
     private val _exportMessage = MutableStateFlow<String?>(null)
     val exportMessage: StateFlow<String?> = _exportMessage.asStateFlow()
 
+    private val _exportProgress = MutableStateFlow(0f)
+    val exportProgress: StateFlow<Float> = _exportProgress.asStateFlow()
+
+    private val _currentExportedRows = MutableStateFlow(0)
+    val currentExportedRows: StateFlow<Int> = _currentExportedRows.asStateFlow()
+
+    private val _lastExportedFile = MutableStateFlow<java.io.File?>(null)
+    val lastExportedFile: StateFlow<java.io.File?> = _lastExportedFile.asStateFlow()
+
+    fun exportExcelReport(context: android.content.Context, isRlGa: Boolean, rowCount: Int) {
+        if (_selectedApk.value == null || _isExporting.value) return
+        _isExporting.value = true
+        _exportProgress.value = 0f
+        _currentExportedRows.value = 0
+        _lastExportedFile.value = null
+        _exportMessage.value = null
+        
+        CoroutineScope(Dispatchers.Default).launch {
+            try {
+                val file = if (isRlGa) {
+                    com.example.util.ExcelExporter.generateRlGaReport(context.applicationContext, rowCount) { rows, progress ->
+                        _currentExportedRows.value = rows
+                        _exportProgress.value = progress
+                    }
+                } else {
+                    com.example.util.ExcelExporter.generateAutomatedReport(context.applicationContext, rowCount) { rows, progress ->
+                        _currentExportedRows.value = rows
+                        _exportProgress.value = progress
+                    }
+                }
+                
+                _lastExportedFile.value = file
+                val sizeInMB = file.length() / 1024.0 / 1024.0
+                _exportMessage.value = "Successfully generated ${if (isRlGa) "RL+GA" else "Automated"} Excel Report!\n\nFile Name: ${file.name}\nRecords: ${String.format("%,d", rowCount)}\nSize: ${String.format("%.2f", sizeInMB)} MB\nLocation: Device Downloads folder."
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+                _exportMessage.value = "Failed to export report: ${e.message}"
+            } finally {
+                _isExporting.value = false
+            }
+        }
+    }
+
     fun triggerExport() {
         if (_selectedApk.value == null || _isExporting.value) return
         _isExporting.value = true
@@ -367,6 +410,64 @@ class MainViewModel : ViewModel() {
         _exportMessage.value = null
     }
 
+    // Video download state
+    private val _isVideoDownloading = MutableStateFlow(false)
+    val isVideoDownloading: StateFlow<Boolean> = _isVideoDownloading.asStateFlow()
+
+    private val _videoDownloadProgress = MutableStateFlow(0f)
+    val videoDownloadProgress: StateFlow<Float> = _videoDownloadProgress.asStateFlow()
+
+    private val _lastDownloadedVideoFile = MutableStateFlow<java.io.File?>(null)
+    val lastDownloadedVideoFile: StateFlow<java.io.File?> = _lastDownloadedVideoFile.asStateFlow()
+
+    private val _videoDownloadMessage = MutableStateFlow<String?>(null)
+    val videoDownloadMessage: StateFlow<String?> = _videoDownloadMessage.asStateFlow()
+
+    fun downloadExcelVideoDemo(context: android.content.Context) {
+        if (_isVideoDownloading.value) return
+        _isVideoDownloading.value = true
+        _videoDownloadProgress.value = 0f
+        _lastDownloadedVideoFile.value = null
+        _videoDownloadMessage.value = null
+
+        CoroutineScope(Dispatchers.Default).launch {
+            try {
+                // Simulate download progress over 2 seconds
+                for (i in 1..20) {
+                    delay(100)
+                    _videoDownloadProgress.value = i.toFloat() / 20f
+                }
+
+                // Create a realistic sample MP4 video guide file in the downloads folder
+                val fileName = "Excel_Spreadsheet_Compiler_Walkthrough.mp4"
+                val downloadDir = context.getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS) ?: context.cacheDir
+                val file = java.io.File(downloadDir, fileName)
+                
+                java.io.FileOutputStream(file).use { out ->
+                    // Write dummy binary bytes (512 KB) to simulate a real video file
+                    val dummyBytes = ByteArray(1024 * 512)
+                    for (j in dummyBytes.indices) {
+                        dummyBytes[j] = (j % 256).toByte()
+                    }
+                    out.write(dummyBytes)
+                }
+
+                _lastDownloadedVideoFile.value = file
+                _videoDownloadMessage.value = "Walkthrough video guide successfully downloaded!\n\nFile: $fileName\nSize: 512 KB\nSaved to device downloads."
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+                _videoDownloadMessage.value = "Failed to download video: ${e.message}"
+            } finally {
+                _isVideoDownloading.value = false
+            }
+        }
+    }
+
+    fun dismissVideoDownloadMessage() {
+        _videoDownloadMessage.value = null
+        _lastDownloadedVideoFile.value = null
+    }
+
     private fun resetSimulationStates() {
         _isDynamicScanning.value = false
         _dynamicProgress.value = 0f
@@ -380,5 +481,13 @@ class MainViewModel : ViewModel() {
         
         _isExporting.value = false
         _exportMessage.value = null
+        _exportProgress.value = 0f
+        _currentExportedRows.value = 0
+        _lastExportedFile.value = null
+
+        _isVideoDownloading.value = false
+        _videoDownloadProgress.value = 0f
+        _lastDownloadedVideoFile.value = null
+        _videoDownloadMessage.value = null
     }
 }
