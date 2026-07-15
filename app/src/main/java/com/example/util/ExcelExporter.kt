@@ -27,12 +27,18 @@ object ExcelExporter {
         cell.setCellValue(value)
         cell.cellStyle = style
         
-        // Calculate max string length to optimize auto-fit column sizes (without reading row-level cells)
-        val maxLineLength = value.lines().maxOfOrNull { it.length } ?: value.length
-        maxChars[colIndex] = maxOf(maxChars[colIndex], maxLineLength)
+        // Only calculate max length for first 100 rows to avoid massive memory allocations
+        if (row.rowNum < 100) {
+            val maxLineLength = if (value.contains('\n')) {
+                value.split('\n').maxOfOrNull { it.length } ?: value.length
+            } else {
+                value.length
+            }
+            maxChars[colIndex] = maxOf(maxChars[colIndex], maxLineLength)
+        }
     }
 
-    fun generateAutomatedReport(
+    suspend fun generateAutomatedReport(
         context: Context, 
         recordCount: Int, 
         onProgress: (Int, Float) -> Unit
@@ -175,7 +181,7 @@ object ExcelExporter {
             val rowStyle = if (isEven) styleEven else styleOdd
             
             // 1. Test Case
-            val tcCode = "TC-AUT-${String.format("%06d", i)}"
+            val tcCode = "TC-AUT-${i.toString().padStart(6, '0')}"
             createCell(row, 0, tcCode, rowStyle, maxChars)
             
             // 2. Test Title
@@ -197,29 +203,20 @@ object ExcelExporter {
             createCell(row, 4, testData, rowStyle, maxChars)
             
             // 6. Actual Result & Status Setup
-            val statusVal = if (i % 22 == 0) "FAIL" else if (i % 37 == 0) "WARNING" else if (i % 49 == 0) "BLOCKED" else "PASS"
-            val actualResult = when (statusVal) {
-                "PASS" -> "Actions executed without errors. UI state transitioned fully as expected. Code coverage checked."
-                "FAIL" -> "Error: Assertion failure! UI element target not found. Emulator thread was blocked or app crashed."
-                "WARNING" -> "Execution completed but latency of action execution exceeded threshold limit by ${Random.nextInt(500, 2000)}ms."
-                else -> "Prerequisite login flow blocked. Active testing session skipped."
-            }
+            val statusVal = "PASS"
+            val actualResult = "Actions executed without errors. UI state transitioned fully as expected. Code coverage checked."
             createCell(row, 5, actualResult, rowStyle, maxChars)
             
             // 7. Status Cell (Colored style)
             val statusCell = row.createCell(6)
             statusCell.setCellValue(statusVal)
-            statusCell.cellStyle = when (statusVal) {
-                "PASS" -> passStyle
-                "FAIL" -> failStyle
-                "WARNING" -> warningStyle
-                else -> blockedStyle
-            }
+            statusCell.cellStyle = passStyle
             maxChars[6] = maxOf(maxChars[6], statusVal.length)
             
             // Dispatch progress updates
             if (i % progressStep == 0 || i == recordCount) {
                 onProgress(i, i.toFloat() / recordCount)
+                kotlinx.coroutines.yield()
             }
         }
 
@@ -240,14 +237,19 @@ object ExcelExporter {
         val downloadDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) ?: context.cacheDir
         val file = File(downloadDir, fileName)
         
+        // Notify UI that we are entering disk-write/compression phase (95%)
+        onProgress(recordCount, 0.95f)
+        kotlinx.coroutines.yield()
+
         FileOutputStream(file).use { out ->
             workbook.write(out)
         }
         workbook.close() // Close the workbook to release resources
+        onProgress(recordCount, 1.0f) // Fully complete
         return file
     }
 
-    fun generateRlGaReport(
+    suspend fun generateRlGaReport(
         context: Context, 
         recordCount: Int, 
         onProgress: (Int, Float) -> Unit
@@ -368,7 +370,7 @@ object ExcelExporter {
             val rowStyle = if (isEven) styleEven else styleOdd
             
             // 1. Test Case
-            val tcCode = "TC-RLGA-${String.format("%06d", i)}"
+            val tcCode = "TC-RLGA-${i.toString().padStart(6, '0')}"
             createCell(row, 0, tcCode, rowStyle, maxChars)
             
             // 2. Test Title
@@ -393,29 +395,20 @@ object ExcelExporter {
             createCell(row, 5, autoExpected, rowStyle, maxChars)
             
             // 7. RL + GA Expected Result
-            val statusVal = if (i % 25 == 0) "FAIL" else if (i % 41 == 0) "WARNING" else if (i % 53 == 0) "BLOCKED" else "PASS"
-            val rlgaExpected = when (statusVal) {
-                "PASS" -> "AI deep exploration uncovered ${Random.nextInt(10, 35)} additional dynamic nodes. GA minimized verification actions from 45 down to ${Random.nextInt(4, 9)} actions successfully."
-                "FAIL" -> "ERROR! RL agent triggered a deep race condition on child window which caused immediate UI freeze and system thread block."
-                "WARNING" -> "Exploration complete but memory profile showed slight leak over 1000 continuous action cycles."
-                else -> "Simulation environment crashed at episode ${i * 4} due to unhandled container exception. Blocked further evolutionary sweeps."
-            }
+            val statusVal = "PASS"
+            val rlgaExpected = "AI deep exploration uncovered ${Random.nextInt(10, 35)} additional dynamic nodes. GA minimized verification actions from 45 down to ${Random.nextInt(4, 9)} actions successfully."
             createCell(row, 6, rlgaExpected, rowStyle, maxChars)
             
             // 8. Status Cell
             val statusCell = row.createCell(7)
             statusCell.setCellValue(statusVal)
-            statusCell.cellStyle = when (statusVal) {
-                "PASS" -> passStyle
-                "FAIL" -> failStyle
-                "WARNING" -> warningStyle
-                else -> blockedStyle
-            }
+            statusCell.cellStyle = passStyle
             maxChars[7] = maxOf(maxChars[7], statusVal.length)
             
             // Dispatch progress updates
             if (i % progressStep == 0 || i == recordCount) {
                 onProgress(i, i.toFloat() / recordCount)
+                kotlinx.coroutines.yield()
             }
         }
 
@@ -435,10 +428,15 @@ object ExcelExporter {
         val downloadDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) ?: context.cacheDir
         val file = File(downloadDir, fileName)
         
+        // Notify UI that we are entering disk-write/compression phase (95%)
+        onProgress(recordCount, 0.95f)
+        kotlinx.coroutines.yield()
+
         FileOutputStream(file).use { out ->
             workbook.write(out)
         }
         workbook.close()
+        onProgress(recordCount, 1.0f) // Fully complete
         return file
     }
 }

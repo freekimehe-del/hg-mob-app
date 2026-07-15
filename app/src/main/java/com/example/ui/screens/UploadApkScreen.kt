@@ -10,6 +10,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -83,7 +85,7 @@ fun UploadApkScreen(
                     modifier = Modifier.testTag("back_button")
                 ) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back to home",
                         tint = MaterialTheme.colorScheme.onBackground
                     )
@@ -117,7 +119,7 @@ fun UploadApkScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         CircularProgressIndicator(
-                            progress = uploadProgress,
+                            progress = { uploadProgress },
                             modifier = Modifier.size(72.dp),
                             color = MaterialTheme.colorScheme.primary,
                             strokeWidth = 6.dp
@@ -264,7 +266,7 @@ fun UploadApkScreen(
                             }
 
                             Spacer(modifier = Modifier.height(20.dp))
-                            Divider(color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.15f))
+                            HorizontalDivider(color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.15f))
                             Spacer(modifier = Modifier.height(16.dp))
 
                             // Grid of properties
@@ -310,7 +312,7 @@ fun UploadApkScreen(
                             ) {
                                 Text("Proceed to Static Analysis")
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Icon(Icons.Default.ArrowForward, contentDescription = null)
+                                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
                             }
                         }
                     }

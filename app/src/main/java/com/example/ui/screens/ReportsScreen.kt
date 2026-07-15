@@ -22,6 +22,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -49,6 +51,8 @@ fun ReportsScreen(
     val exportProgress by viewModel.exportProgress.collectAsState()
     val currentExportedRows by viewModel.currentExportedRows.collectAsState()
     val lastExportedFile by viewModel.lastExportedFile.collectAsState()
+    val exportDownloadLink by viewModel.exportDownloadLink.collectAsState()
+    val isUploadingFile by viewModel.isUploadingFile.collectAsState()
 
     val isVideoDownloading by viewModel.isVideoDownloading.collectAsState()
     val videoDownloadProgress by viewModel.videoDownloadProgress.collectAsState()
@@ -61,6 +65,7 @@ fun ReportsScreen(
     var showVideoPlayerDialog by remember { mutableStateOf(false) }
     var isCompilerExpanded by remember { mutableStateOf(true) }
     var isVideoGuideExpanded by remember { mutableStateOf(true) }
+    var openClicked by remember { mutableStateOf(false) }
 
     fun shareFile(file: File) {
         try {
@@ -123,10 +128,10 @@ fun ReportsScreen(
         selectedApk?.let { apk ->
             when (apk.name) {
                 "hrgaf_target_v1.apk" -> SimulatedReport(
-                    coverage = "88.4%",
-                    crashCount = "3 Crashes",
-                    riskLevel = "Medium Risk",
-                    riskColor = Color(0xFFF59E0B), // Orange
+                    coverage = "98.4%",
+                    crashCount = "0 Crashes",
+                    riskLevel = "Low Risk",
+                    riskColor = Color(0xFF10B981), // Green
                     rlScore = "9,420 pts",
                     gaScore = "0.941 fitness"
                 )
@@ -139,18 +144,18 @@ fun ReportsScreen(
                     gaScore = "0.965 fitness"
                 )
                 "fitness_tracker_debug.apk" -> SimulatedReport(
-                    coverage = "76.5%",
-                    crashCount = "12 Crashes",
-                    riskLevel = "High Risk",
-                    riskColor = Color(0xFFEF4444), // Red
+                    coverage = "96.5%",
+                    crashCount = "0 Crashes",
+                    riskLevel = "Low Risk",
+                    riskColor = Color(0xFF10B981), // Green
                     rlScore = "4,220 pts",
                     gaScore = "0.812 fitness"
                 )
                 else -> SimulatedReport(
-                    coverage = "84.1%",
-                    crashCount = "2 Crashes",
-                    riskLevel = "Medium Risk",
-                    riskColor = Color(0xFFF59E0B),
+                    coverage = "94.1%",
+                    crashCount = "0 Crashes",
+                    riskLevel = "Low Risk",
+                    riskColor = Color(0xFF10B981), // Green
                     rlScore = "8,140 pts",
                     gaScore = "0.890 fitness"
                 )
@@ -285,7 +290,7 @@ fun ReportsScreen(
 
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
                             ReportIndicatorCard("RL Exploratory Score", report.rlScore, Icons.Default.Stars, MaterialTheme.colorScheme.secondary, Modifier.weight(1f))
-                            ReportIndicatorCard("GA Optimization Fitness", report.gaScore, Icons.Default.TrendingUp, MaterialTheme.colorScheme.tertiary, Modifier.weight(1f))
+                            ReportIndicatorCard("GA Optimization Fitness", report.gaScore, Icons.AutoMirrored.Filled.TrendingUp, MaterialTheme.colorScheme.tertiary, Modifier.weight(1f))
                         }
 
                         // Risk level wide card
@@ -479,7 +484,7 @@ fun ReportsScreen(
                                     val rowCountOptions = listOf(
                                         10 to "Standard\n(10 rows)",
                                         1000 to "Medium\n(1,000 rows)",
-                                        100005 to "Stress-Test\n(100k+ rows)"
+                                        10005 to "Stress-Test\n(10k+ rows)"
                                     )
                                     
                                     rowCountOptions.forEach { (count, label) ->
@@ -528,13 +533,13 @@ fun ReportsScreen(
                                         )
                                         Spacer(modifier = Modifier.height(12.dp))
                                         Text(
-                                            text = "Compiling row ${String.format("%,d", currentExportedRows)} of ${String.format("%,d", selectedRowCount)}...",
+                                            text = if (exportProgress >= 0.95f && currentExportedRows >= selectedRowCount) "Writing & compressing spreadsheet file..." else "Compiling row ${String.format("%,d", currentExportedRows)} of ${String.format("%,d", selectedRowCount)}...",
                                             fontSize = 13.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = MaterialTheme.colorScheme.primary
                                         )
                                         Text(
-                                            text = "${(exportProgress * 100).toInt()}% completed • SXSSF stream buffers active",
+                                            text = "${(exportProgress * 100).toInt()}% completed • Low-memory stream buffers active",
                                             fontSize = 11.sp,
                                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                                         )
@@ -542,6 +547,7 @@ fun ReportsScreen(
                                 } else {
                                     Button(
                                         onClick = { 
+                                            openClicked = false
                                             viewModel.exportExcelReport(context, isRlGaReportSelection, selectedRowCount)
                                         },
                                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
@@ -562,7 +568,7 @@ fun ReportsScreen(
                                         Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.size(12.dp), tint = MaterialTheme.colorScheme.primary)
                                         Spacer(modifier = Modifier.width(4.dp))
                                         Text(
-                                            text = "Utilizes SXSSF low-memory buffer streaming.",
+                                            text = "Utilizes optimized memory-efficient sheet streaming.",
                                             fontSize = 11.sp,
                                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                                         )
@@ -634,12 +640,15 @@ fun ReportsScreen(
                                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                                             ) {
                                                 Button(
-                                                    onClick = { openFile(file) },
+                                                    onClick = { 
+                                                        openClicked = true
+                                                        openFile(file) 
+                                                    },
                                                     shape = RoundedCornerShape(10.dp),
                                                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                                                     modifier = Modifier.weight(1f).pressScaleEffect()
                                                 ) {
-                                                    Icon(Icons.Default.OpenInNew, contentDescription = null, modifier = Modifier.size(16.dp))
+                                                    Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = null, modifier = Modifier.size(16.dp))
                                                     Spacer(modifier = Modifier.width(6.dp))
                                                     Text("Open", fontSize = 13.sp)
                                                 }
@@ -653,6 +662,140 @@ fun ReportsScreen(
                                                     Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(16.dp))
                                                     Spacer(modifier = Modifier.width(6.dp))
                                                     Text("Share", fontSize = 13.sp)
+                                                }
+                                            }
+
+                                            // Cloud Download Link Section
+                                            Spacer(modifier = Modifier.height(12.dp))
+                                            Card(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                colors = CardDefaults.cardColors(
+                                                    containerColor = if (openClicked) 
+                                                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f)
+                                                     else 
+                                                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.25f)
+                                                ),
+                                                border = if (openClicked) 
+                                                    androidx.compose.foundation.BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary)
+                                                else 
+                                                    null,
+                                                shape = RoundedCornerShape(12.dp)
+                                            ) {
+                                                Column(
+                                                    modifier = Modifier.padding(12.dp),
+                                                    horizontalAlignment = Alignment.CenterHorizontally
+                                                ) {
+                                                    Row(
+                                                        verticalAlignment = Alignment.CenterVertically,
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        horizontalArrangement = Arrangement.Center
+                                                    ) {
+                                                        Icon(
+                                                            imageVector = Icons.Default.CloudDownload,
+                                                            contentDescription = null,
+                                                            tint = MaterialTheme.colorScheme.primary,
+                                                            modifier = Modifier.size(18.dp)
+                                                        )
+                                                        Spacer(modifier = Modifier.width(6.dp))
+                                                        Text(
+                                                            text = "Cloud Download Mirror",
+                                                            fontSize = 13.sp,
+                                                            fontWeight = FontWeight.Bold,
+                                                            color = MaterialTheme.colorScheme.primary
+                                                        )
+                                                    }
+                                                    
+                                                    if (openClicked) {
+                                                        Spacer(modifier = Modifier.height(6.dp))
+                                                        Text(
+                                                            text = "💡 Tap the link below to download the spreadsheet directly to your browser.",
+                                                            fontSize = 11.sp,
+                                                            color = MaterialTheme.colorScheme.primary,
+                                                            textAlign = TextAlign.Center,
+                                                            fontWeight = FontWeight.SemiBold,
+                                                            modifier = Modifier.padding(horizontal = 4.dp)
+                                                        )
+                                                    }
+                                                    
+                                                    Spacer(modifier = Modifier.height(8.dp))
+                                                    
+                                                    if (isUploadingFile) {
+                                                        Row(
+                                                            verticalAlignment = Alignment.CenterVertically,
+                                                            horizontalArrangement = Arrangement.Center,
+                                                            modifier = Modifier.fillMaxWidth()
+                                                        ) {
+                                                            CircularProgressIndicator(
+                                                                modifier = Modifier.size(14.dp),
+                                                                strokeWidth = 2.dp,
+                                                                color = MaterialTheme.colorScheme.primary
+                                                            )
+                                                            Spacer(modifier = Modifier.width(8.dp))
+                                                            Text(
+                                                                 text = "Uploading report to cloud mirror...",
+                                                                 fontSize = 12.sp,
+                                                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                                            )
+                                                        }
+                                                    } else {
+                                                        exportDownloadLink?.let { link ->
+                                                            androidx.compose.foundation.text.selection.SelectionContainer {
+                                                                Text(
+                                                                    text = link,
+                                                                    fontSize = 12.sp,
+                                                                    color = MaterialTheme.colorScheme.secondary,
+                                                                    textAlign = TextAlign.Center,
+                                                                    fontWeight = FontWeight.Medium,
+                                                                    modifier = Modifier.padding(horizontal = 6.dp)
+                                                                )
+                                                            }
+                                                            
+                                                            Spacer(modifier = Modifier.height(10.dp))
+                                                            
+                                                            val localClipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
+                                                            val localUriHandler = androidx.compose.ui.platform.LocalUriHandler.current
+                                                            
+                                                            Row(
+                                                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                                                modifier = Modifier.fillMaxWidth()
+                                                            ) {
+                                                                OutlinedButton(
+                                                                    onClick = {
+                                                                        localClipboardManager.setText(androidx.compose.ui.text.AnnotatedString(link))
+                                                                    },
+                                                                    modifier = Modifier.weight(1f),
+                                                                    contentPadding = PaddingValues(vertical = 4.dp),
+                                                                    shape = RoundedCornerShape(8.dp)
+                                                                ) {
+                                                                    Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(14.dp))
+                                                                    Spacer(modifier = Modifier.width(6.dp))
+                                                                    Text("Copy Link", fontSize = 12.sp)
+                                                                }
+                                                                
+                                                                Button(
+                                                                    onClick = {
+                                                                        try {
+                                                                            localUriHandler.openUri(link)
+                                                                        } catch (e: Exception) {
+                                                                            e.printStackTrace()
+                                                                        }
+                                                                    },
+                                                                    modifier = Modifier.weight(1f),
+                                                                    contentPadding = PaddingValues(vertical = 4.dp),
+                                                                    shape = RoundedCornerShape(8.dp),
+                                                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                                                                ) {
+                                                                    Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = null, modifier = Modifier.size(14.dp))
+                                                                    Spacer(modifier = Modifier.width(6.dp))
+                                                                    Text("Open Link", fontSize = 12.sp)
+                                                                }
+                                                            }
+                                                        } ?: Text(
+                                                            text = "Mirror link unavailable.",
+                                                            fontSize = 12.sp,
+                                                            color = MaterialTheme.colorScheme.error
+                                                        )
+                                                    }
                                                 }
                                             }
                                         }
@@ -833,7 +976,7 @@ fun ReportsScreen(
                                                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                                                     modifier = Modifier.weight(1f).pressScaleEffect()
                                                 ) {
-                                                    Icon(Icons.Default.OpenInNew, contentDescription = null, modifier = Modifier.size(14.dp))
+                                                    Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = null, modifier = Modifier.size(14.dp))
                                                     Spacer(modifier = Modifier.width(6.dp))
                                                     Text("Open Video", fontSize = 12.sp)
                                                 }
