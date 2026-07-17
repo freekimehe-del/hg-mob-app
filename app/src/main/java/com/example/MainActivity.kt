@@ -17,6 +17,11 @@ import com.example.viewmodel.MainViewModel
 
 class MainActivity : ComponentActivity() {
   
+  init {
+    System.setProperty("poi.useLambdaMetafactory", "false")
+    System.setProperty("org.apache.poi.useLambdaMetafactory", "false")
+  }
+  
   private val viewModel: MainViewModel by viewModels()
 
   override fun onCreate(savedInstanceState: Bundle?) {

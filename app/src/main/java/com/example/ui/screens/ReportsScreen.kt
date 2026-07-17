@@ -5,6 +5,15 @@ import android.content.Intent
 import androidx.core.content.FileProvider
 import androidx.compose.ui.platform.LocalContext
 import java.io.File
+import android.content.ContentValues
+import android.provider.MediaStore
+import android.os.Environment
+import android.widget.Toast
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.items
 
 import androidx.compose.ui.composed
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -92,6 +101,60 @@ fun ReportsScreen(
             context.startActivity(intent)
         } catch (e: Exception) {
             shareFile(file)
+        }
+    }
+
+    fun downloadFileToPublicDownloads(context: Context, file: File) {
+        try {
+            val resolver = context.contentResolver
+            val contentValues = ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, file.name)
+                put(MediaStore.MediaColumns.MIME_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+                }
+            }
+            
+            val uri = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+            } else {
+                resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+            }
+            
+            if (uri != null) {
+                resolver.openOutputStream(uri)?.use { outputStream ->
+                    FileInputStream(file).use { inputStream ->
+                        inputStream.copyTo(outputStream)
+                    }
+                }
+                Toast.makeText(context, "Saved to Downloads folder: ${file.name}", Toast.LENGTH_LONG).show()
+            } else {
+                val publicDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                if (!publicDir.exists()) publicDir.mkdirs()
+                val publicFile = File(publicDir, file.name)
+                FileInputStream(file).use { inputStream ->
+                    FileOutputStream(publicFile).use { outputStream ->
+                        inputStream.copyTo(outputStream)
+                    }
+                }
+                Toast.makeText(context, "Saved to public Downloads: ${file.name}", Toast.LENGTH_LONG).show()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            try {
+                val publicDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                if (!publicDir.exists()) publicDir.mkdirs()
+                val publicFile = File(publicDir, file.name)
+                FileInputStream(file).use { inputStream ->
+                    FileOutputStream(publicFile).use { outputStream ->
+                        inputStream.copyTo(outputStream)
+                    }
+                }
+                Toast.makeText(context, "Saved to Downloads: ${file.name}", Toast.LENGTH_LONG).show()
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                Toast.makeText(context, "Saved report to: ${file.absolutePath}", Toast.LENGTH_LONG).show()
+            }
         }
     }
 
@@ -665,6 +728,19 @@ fun ReportsScreen(
                                                 }
                                             }
 
+                                            Spacer(modifier = Modifier.height(8.dp))
+
+                                            Button(
+                                                onClick = { downloadFileToPublicDownloads(context, file) },
+                                                shape = RoundedCornerShape(10.dp),
+                                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF10B981)),
+                                                modifier = Modifier.fillMaxWidth().pressScaleEffect()
+                                            ) {
+                                                Icon(Icons.Default.Download, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                                Text("Save to Public Downloads Folder", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                                            }
+
                                             // Cloud Download Link Section
                                             Spacer(modifier = Modifier.height(12.dp))
                                             Card(
@@ -798,6 +874,229 @@ fun ReportsScreen(
                                                     }
                                                 }
                                             }
+
+                                            // Spreadsheet Preview Card
+                                            Spacer(modifier = Modifier.height(16.dp))
+                                            
+                                            Card(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                shape = RoundedCornerShape(16.dp),
+                                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                                                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+                                            ) {
+                                                Column(
+                                                    modifier = Modifier.padding(16.dp)
+                                                ) {
+                                                    Row(
+                                                        verticalAlignment = Alignment.CenterVertically,
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        horizontalArrangement = Arrangement.SpaceBetween
+                                                    ) {
+                                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                                            Icon(
+                                                                imageVector = Icons.Default.GridOn,
+                                                                contentDescription = null,
+                                                                tint = if (isRlGaReportSelection) Color(0xFF0284C7) else Color(0xFF1E3A8A),
+                                                                modifier = Modifier.size(20.dp)
+                                                            )
+                                                            Spacer(modifier = Modifier.width(8.dp))
+                                                            Text(
+                                                                text = "On-Screen Spreadsheet Preview",
+                                                                fontWeight = FontWeight.Bold,
+                                                                fontSize = 15.sp,
+                                                                color = MaterialTheme.colorScheme.onSurface
+                                                            )
+                                                        }
+                                                        
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .background(
+                                                                    if (isRlGaReportSelection) Color(0xFFE0F2FE) else Color(0xFFDBEAFE),
+                                                                    RoundedCornerShape(12.dp)
+                                                                )
+                                                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                                                        ) {
+                                                            Text(
+                                                                text = "${minOf(selectedRowCount, 1000)} of $selectedRowCount rows",
+                                                                fontSize = 10.sp,
+                                                                fontWeight = FontWeight.Bold,
+                                                                color = if (isRlGaReportSelection) Color(0xFF0369A1) else Color(0xFF1D4ED8)
+                                                            )
+                                                        }
+                                                    }
+                                                    
+                                                    Spacer(modifier = Modifier.height(12.dp))
+                                                    
+                                                    var previewSearchQuery by remember { mutableStateOf("") }
+                                                    
+                                                    OutlinedTextField(
+                                                        value = previewSearchQuery,
+                                                        onValueChange = { previewSearchQuery = it },
+                                                        placeholder = { Text("Filter rows by Case, Title, Summary...", fontSize = 12.sp) },
+                                                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                                                        trailingIcon = {
+                                                            if (previewSearchQuery.isNotEmpty()) {
+                                                                IconButton(onClick = { previewSearchQuery = "" }) {
+                                                                    Icon(Icons.Default.Clear, contentDescription = null, modifier = Modifier.size(16.dp))
+                                                                }
+                                                            }
+                                                        },
+                                                        modifier = Modifier.fillMaxWidth().height(48.dp),
+                                                        shape = RoundedCornerShape(8.dp),
+                                                        colors = OutlinedTextFieldDefaults.colors(
+                                                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                                                        ),
+                                                        singleLine = true,
+                                                        textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp)
+                                                    )
+                                                    
+                                                    Spacer(modifier = Modifier.height(12.dp))
+                                                    
+                                                    val allRows = remember(isRlGaReportSelection, selectedRowCount) {
+                                                        generateOnScreenRows(isRlGaReportSelection, selectedRowCount)
+                                                    }
+                                                    
+                                                    val filteredRows = allRows.filter { row ->
+                                                        row.testCase.contains(previewSearchQuery, ignoreCase = true) ||
+                                                        row.testTitle.contains(previewSearchQuery, ignoreCase = true) ||
+                                                        row.testSummary.contains(previewSearchQuery, ignoreCase = true) ||
+                                                        row.testData.contains(previewSearchQuery, ignoreCase = true) ||
+                                                        row.field5.contains(previewSearchQuery, ignoreCase = true) ||
+                                                        (row.field6 != null && row.field6.contains(previewSearchQuery, ignoreCase = true))
+                                                    }
+                                                    
+                                                    val headerBgColor = if (isRlGaReportSelection) Color(0xFF075985) else Color(0xFF1E40AF)
+                                                    val evenBg = Color(0xFFFFFFFF)
+                                                    val oddBg = if (isRlGaReportSelection) Color(0xFFF0FDFA) else Color(0xFFEFF6FF)
+                                                    val cellTextColor = Color(0xFF1F2937)
+                                                    
+                                                    val columns = if (isRlGaReportSelection) {
+                                                        listOf(
+                                                            "Test Case", "Test Title", "Test Summary", "Testing Steps (Automated + AI Steps)", "Test Data", "Automated Expected Result", "RL + GA Expected Result", "Status"
+                                                        )
+                                                    } else {
+                                                        listOf(
+                                                            "Test Case", "Test Title", "Test Summary", "Testing Steps", "Test Data", "Actual Result", "Status"
+                                                        )
+                                                    }
+                                                    
+                                                    val colWidths = mapOf(
+                                                        "Test Case" to 110.dp,
+                                                        "Test Title" to 180.dp,
+                                                        "Test Summary" to 250.dp,
+                                                        "Testing Steps" to 300.dp,
+                                                        "Testing Steps (Automated + AI Steps)" to 320.dp,
+                                                        "Test Data" to 220.dp,
+                                                        "Actual Result" to 250.dp,
+                                                        "Automated Expected Result" to 250.dp,
+                                                        "RL + GA Expected Result" to 250.dp,
+                                                        "Status" to 90.dp
+                                                     )
+                                                     
+                                                     val horizontalScrollState = rememberScrollState()
+                                                     
+                                                     Box(
+                                                         modifier = Modifier
+                                                             .fillMaxWidth()
+                                                             .height(300.dp)
+                                                             .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.12f), RoundedCornerShape(10.dp))
+                                                             .clip(RoundedCornerShape(10.dp))
+                                                             .background(MaterialTheme.colorScheme.surface)
+                                                     ) {
+                                                         if (filteredRows.isEmpty()) {
+                                                             Box(
+                                                                 modifier = Modifier.fillMaxSize(),
+                                                                 contentAlignment = Alignment.Center
+                                                             ) {
+                                                                 Text(
+                                                                     text = "No matching records found.",
+                                                                     fontSize = 12.sp,
+                                                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                                                                 )
+                                                             }
+                                                         } else {
+                                                             Box(
+                                                                 modifier = Modifier
+                                                                     .fillMaxSize()
+                                                                     .horizontalScroll(horizontalScrollState)
+                                                             ) {
+                                                                 LazyColumn(
+                                                                     modifier = Modifier.fillMaxHeight()
+                                                                 ) {
+                                                                     item {
+                                                                         Row(
+                                                                             modifier = Modifier.background(headerBgColor)
+                                                                         ) {
+                                                                             columns.forEach { col ->
+                                                                                 TableCell(text = col, isHeader = true, width = colWidths[col] ?: 150.dp)
+                                                                             }
+                                                                         }
+                                                                     }
+                                                                     
+                                                                     items(filteredRows) { row ->
+                                                                         val isEven = row.index % 2 == 0
+                                                                         val rowBgColor = if (isEven) evenBg else oddBg
+                                                                         Row(
+                                                                             modifier = Modifier.background(rowBgColor)
+                                                                         ) {
+                                                                             TableCell(text = row.testCase, isHeader = false, width = colWidths["Test Case"] ?: 110.dp, textColor = cellTextColor)
+                                                                             TableCell(text = row.testTitle, isHeader = false, width = colWidths["Test Title"] ?: 180.dp, textColor = cellTextColor)
+                                                                             TableCell(text = row.testSummary, isHeader = false, width = colWidths["Test Summary"] ?: 250.dp, textColor = cellTextColor)
+                                                                             TableCell(
+                                                                                 text = row.testingSteps, 
+                                                                                 isHeader = false, 
+                                                                                 width = if (isRlGaReportSelection) 
+                                                                                     colWidths["Testing Steps (Automated + AI Steps)"] ?: 320.dp
+                                                                                 else 
+                                                                                     colWidths["Testing Steps"] ?: 300.dp, 
+                                                                                 textColor = cellTextColor
+                                                                             )
+                                                                             TableCell(text = row.testData, isHeader = false, width = colWidths["Test Data"] ?: 220.dp, textColor = cellTextColor)
+                                                                             
+                                                                             if (isRlGaReportSelection) {
+                                                                                 TableCell(text = row.field5, isHeader = false, width = colWidths["Automated Expected Result"] ?: 250.dp, textColor = cellTextColor)
+                                                                                 TableCell(text = row.field6 ?: "", isHeader = false, width = colWidths["RL + GA Expected Result"] ?: 250.dp, textColor = cellTextColor)
+                                                                             } else {
+                                                                                 TableCell(text = row.field5, isHeader = false, width = colWidths["Actual Result"] ?: 250.dp, textColor = cellTextColor)
+                                                                             }
+                                                                             
+                                                                             Box(
+                                                                                 modifier = Modifier
+                                                                                     .width(colWidths["Status"] ?: 90.dp)
+                                                                                     .height(IntrinsicSize.Min)
+                                                                                     .border(0.5.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+                                                                                     .background(Color(0xFFDCFCE7))
+                                                                                     .padding(horizontal = 8.dp, vertical = 12.dp),
+                                                                                 contentAlignment = Alignment.Center
+                                                                             ) {
+                                                                                 Text(
+                                                                                     text = row.status,
+                                                                                     color = Color(0xFF15803D),
+                                                                                     fontWeight = FontWeight.Bold,
+                                                                                     fontSize = 11.sp
+                                                                                 )
+                                                                             }
+                                                                         }
+                                                                     }
+                                                                 }
+                                                             }
+                                                         }
+                                                     }
+                                                     
+                                                     if (selectedRowCount > 1000) {
+                                                         Spacer(modifier = Modifier.height(8.dp))
+                                                         Text(
+                                                             text = "⚠️ Performance Notice: Showing first 1,000 of $selectedRowCount total records. All $selectedRowCount rows are preserved in the fully compiled file.",
+                                                             fontSize = 10.sp,
+                                                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                                                             fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
+                                                             textAlign = TextAlign.Center,
+                                                             modifier = Modifier.fillMaxWidth()
+                                                         )
+                                                     }
+                                                 }
+                                             }
                                         }
 
                                         Spacer(modifier = Modifier.height(12.dp))
@@ -1439,4 +1738,100 @@ fun Modifier.pressScaleEffect(): Modifier = composed {
         label = "pressScale"
     )
     this.scale(scale)
+}
+
+data class OnScreenRow(
+    val index: Int,
+    val testCase: String,
+    val testTitle: String,
+    val testSummary: String,
+    val testingSteps: String,
+    val testData: String,
+    val field5: String,
+    val field6: String?,
+    val status: String
+)
+
+fun generateOnScreenRows(isRlGa: Boolean, rowCount: Int): List<OnScreenRow> {
+    val list = mutableListOf<OnScreenRow>()
+    val limit = minOf(rowCount, 1000)
+    
+    val components = listOf("LoginActivity", "DashboardScreen", "SettingsPanel", "CheckoutFlow", "DeviceRegistration", "TelemetryService", "UserProfile")
+    val triggers = listOf("tapping button", "inputting invalid email", "monitoring API delay", "simulating orientation change", "injecting crash signal")
+    
+    val exploratoryTargets = listOf("Deep Path Expansion", "State Transition Minimization", "Action Sequence Evolutionary Search", "Edge-case Widget Stimulation", "Concurrency Timing Optimizer")
+    val networkContexts = listOf("seed_run=7790, depth=10", "episodes=1000, mutation=0.05", "crossover=0.85, population=100", "epsilon_decay=0.995, alpha=0.1", "fitness_mode=length_minimizer")
+
+    for (i in 1..limit) {
+        val r = kotlin.random.Random(i.toLong())
+        if (isRlGa) {
+            val target = exploratoryTargets[i % exploratoryTargets.size]
+            val title = "$target deep sequence simulation $i"
+            val summary = "Reinforcement learning exploration of the system layout. Genetic sequence mutations applied to discover deep logic states and remove redundant UI traversal loops for $target."
+            val steps = "[Auto] Pre-populate session cache -> [RL Agent] Explore screen layout recursively -> [RL Agent] Click component matrix index $i -> [GA Engine] Mutate and recombine sequence to minimize path length -> [Auto] Perform validation check."
+            val testData = "${networkContexts[i % networkContexts.size]}, generation=${i / 50}, current_episode=${i * 10}"
+            val autoExpected = "Standard automation performs linear traversal of 5 default screens. No deep exploration branches visited."
+            val rlgaExpected = "AI deep exploration uncovered ${r.nextInt(10, 35)} additional dynamic nodes. GA minimized verification actions from 45 down to ${r.nextInt(4, 9)} actions successfully."
+            list.add(
+                OnScreenRow(
+                    index = i,
+                    testCase = "TC-RLGA-${i.toString().padStart(6, '0')}",
+                    testTitle = title,
+                    testSummary = summary,
+                    testingSteps = steps,
+                    testData = testData,
+                    field5 = autoExpected,
+                    field6 = rlgaExpected,
+                    status = "PASS"
+                )
+            )
+        } else {
+            val component = components[i % components.size]
+            val trigger = triggers[i % triggers.size]
+            val title = "$component $trigger regression verify"
+            val summary = "Automated execution testing $component. Specifically verifying stability, view bounds, and memory spikes when $trigger in a simulated sandbox environment."
+            val steps = "1. Launch emulator context for $component.\n2. Trigger action: $trigger.\n3. Poll for visual refresh and check thread stability.\n4. Capture screenshots and code coverage percentages."
+            val scaleFactor = r.nextFloat() * 10f
+            val testData = "context=$component, action=$trigger, run_id=${i + 1400}, scale_factor=${String.format("%.2f", scaleFactor)}"
+            val actualResult = "Actions executed without errors. UI state transitioned fully as expected. Code coverage checked."
+            list.add(
+                OnScreenRow(
+                    index = i,
+                    testCase = "TC-AUT-${i.toString().padStart(6, '0')}",
+                    testTitle = title,
+                    testSummary = summary,
+                    testingSteps = steps,
+                    testData = testData,
+                    field5 = actualResult,
+                    field6 = null,
+                    status = "PASS"
+                )
+            )
+        }
+    }
+    return list
+}
+
+@Composable
+fun TableCell(
+    text: String,
+    isHeader: Boolean,
+    width: androidx.compose.ui.unit.Dp,
+    textColor: Color = Color.Unspecified
+) {
+    Box(
+        modifier = Modifier
+            .width(width)
+            .border(0.5.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
+            .padding(horizontal = 12.dp, vertical = 10.dp)
+    ) {
+        Text(
+            text = text,
+            fontWeight = if (isHeader) FontWeight.Bold else FontWeight.Normal,
+            fontSize = if (isHeader) 13.sp else 12.sp,
+            color = if (isHeader) Color.White else textColor,
+            maxLines = if (isHeader) 1 else 6,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
 }
